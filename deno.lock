@@ -1,0 +1,26 @@
+{
+  "version": "2",
+  "remote": {
+    "https://deno.land/std@0.165.0/_util/asserts.ts": "d0844e9b62510f89ce1f9878b046f6a57bf88f208a10304aab50efcb48365272",
+    "https://deno.land/std@0.165.0/flags/mod.ts": "3b459daf581e047819b6b799c92b96c81b4eecbd5ea025643d54dc0abc6ac923",
+    "https://deno.land/std@0.165.0/fmt/colors.ts": "9e36a716611dcd2e4865adea9c4bec916b5c60caad4cdcdc630d4974e6bb8bd4",
+    "https://deno.land/std@0.165.0/fmt/printf.ts": "111a4df40a81799da778421ae0260f278e5d79877e30e92403cd57d197a8d1b0",
+    "https://deno.land/x/deno_util@v0.0.3/logger.ts": "da75af002bc4ddc8d367148ba07bb50ab41987f7c520aeed01ef373fde85bc75"
+  },
+  "npm": {
+    "specifiers": {
+      "@types/lodash": "@types/lodash@4.14.190",
+      "lodash": "lodash@4.17.21"
+    },
+    "packages": {
+      "@types/lodash@4.14.190": {
+        "integrity": "sha512-5iJ3FBJBvQHQ8sFhEhJfjUP+G+LalhavTkYyrAYqz5MEJG+erSv0k9KJLb6q7++17Lafk1scaTIFXcMJlwK8Mw==",
+        "dependencies": {}
+      },
+      "lodash@4.17.21": {
+        "integrity": "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==",
+        "dependencies": {}
+      }
+    }
+  }
+}

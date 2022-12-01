@@ -1,0 +1,17 @@
+{
+  "importMap": "import_map.json",
+  "tasks": {
+    "start": "deno run -A ./index.ts",
+  },
+  "fmt": {
+    "files": {
+      "include": [
+        "src/",
+        "index.ts"
+      ]
+    },
+    "options": {
+      "lineWidth": 120
+    }
+  }
+}
