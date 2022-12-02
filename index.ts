@@ -2,6 +2,7 @@ import { parse } from "flags";
 import { Logger } from "logger";
 // @deno-types="@types/lodash/fp"
 import fp from "lodash/fp";
+import { readFile } from "./src/helper.ts";
 
 const logger = new Logger();
 
@@ -12,8 +13,9 @@ const main = async (args: string[]) => {
 
   try {
     const runner = (await import(`./src/${padDay}.ts`)).run;
+    const rawContent = await readFile(`./input/${padDay}.txt`);
 
-    const result = await runner(padDay);
+    const result = await runner(rawContent);
 
     logger.info(`Result of day ${day} is: '${result}'`);
   } catch (error) {

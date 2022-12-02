@@ -6,6 +6,7 @@
     "@types/lodash": "npm:@types/lodash",
     "lodash/fp": "npm:lodash/fp.js",
     "@types/lodash/fp": "npm:@types/lodash/fp",
+    "testing/": "https://deno.land/std@0.165.0/testing/",
     "flags": "https://deno.land/std@0.165.0/flags/mod.ts",
     "logger": "https://deno.land/x/deno_util@v0.0.3/logger.ts",
     "path": "https://deno.land/std@0.165.0/path/mod.ts",
