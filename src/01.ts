@@ -1,8 +1,6 @@
 // @deno-types="@types/lodash/fp"
 import fp from "lodash/fp";
-
-const splitByEmptyRows = (str: string) => str.split(/\n\s*\n/g);
-const splitByNewline = (str: string) => str.split(/\n/g);
+import { splitByEmptyRows, splitByNewline } from "./helper.ts";
 
 export const run = (raw: string) => {
   const splitUp = fp.compose(
