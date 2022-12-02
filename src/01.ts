@@ -10,13 +10,15 @@ export const run = (raw: string) => {
     splitByEmptyRows,
   );
 
-  const xxx = splitUp(raw);
+  const elvesCaloriesMap = splitUp(raw);
 
-  console.log(`###LOG###: ${xxx[0]}`);
-  console.log(`###LOG###: ${xxx[1]}`);
-  console.log(`###LOG###: ${xxx[2]}`);
-  console.log(`###LOG###: ${xxx[3]}`);
-  console.log(`###LOG###: ${xxx[4]}`);
+  const getHighestCalorieSum = fp.compose(
+    fp.max,
+    fp.map(fp.sum),
+    fp.map(fp.map(fp.parseInt(10))),
+  );
 
-  return "42";
+  const result = getHighestCalorieSum(elvesCaloriesMap);
+
+  return result;
 };
