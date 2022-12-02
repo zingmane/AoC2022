@@ -17,7 +17,12 @@ const main = async (args: string[]) => {
 
     const result = await runner(rawContent);
 
-    logger.info(`Result of day ${day} is: '${result}'`);
+    if (result.length === 1) {
+      logger.info(`Result of day ${day} is: '${result}'`);
+    } else {
+      logger.info(`Results of day ${day} are:`);
+      result.map((p: any, i: number) => logger.info(`  part ${i + 1}: '${p}'`));
+    }
   } catch (error) {
     logger.error(`Could not load module: ${error}`);
   }

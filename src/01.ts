@@ -18,5 +18,5 @@ export const run = (raw: string) => {
 
   const result = getHighestCalorieSum(elvesCaloriesMap);
 
-  return result;
+  return [result];
 };

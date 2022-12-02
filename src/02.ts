@@ -57,5 +57,5 @@ export const run = (raw: string) => {
 
   const result = getMatchScore(strategyGuide);
 
-  return result;
+  return [result, 0];
 };

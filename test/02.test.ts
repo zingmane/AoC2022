@@ -8,5 +8,5 @@ C Z
 `
 
 Deno.test('day 02', () => {
-  assertEquals(day02.run(input), 15);
+  assertEquals(day02.run(input), [15, 12]);
 });
