@@ -10,13 +10,24 @@ export const run = (raw: string) => {
 
   const elvesCaloriesMap = splitUp(raw);
 
-  const getHighestCalorieSum = fp.compose(
+  const getPart1 = fp.compose(
     fp.max,
     fp.map(fp.sum),
     fp.map(fp.map(fp.parseInt(10))),
   );
 
-  const result = getHighestCalorieSum(elvesCaloriesMap);
+  const orderCalories = (calories: number[]) => calories.sort((a, b) => b - a);
 
-  return [result];
+  const getPart2 = fp.compose(
+    fp.sum,
+    fp.take(3),
+    orderCalories,
+    fp.map(fp.sum),
+    fp.map(fp.map(fp.parseInt(10))),
+  );
+
+  const part1 = getPart1(elvesCaloriesMap);
+  const part2 = getPart2(elvesCaloriesMap);
+
+  return [part1, part2];
 };

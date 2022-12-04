@@ -18,5 +18,5 @@ const input = `1000
 10000`
 
 Deno.test('day 01', () => {
-  assertEquals(day01.run(input), [24000]);
+  assertEquals(day01.run(input), [24000, 45000]);
 });
