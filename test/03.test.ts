@@ -18,10 +18,18 @@ Deno.test('getCharScore', () => {
   assertEquals(day03.getCharScore("F"), 32);
 });
 
-Deno.test('getCharScore', () => {
-  assertEquals(day03.getDuplicateChar(["abcdef", "fghijklmn"]), "f");
+Deno.test('getDuplicateCharOutOf2', () => {
+  assertEquals(day03.getDuplicateCharOutOf2(["abcdef", "fghijklmn"]), "f");
 });
 
-Deno.test('day 03', () => {
-  assertEquals(day03.run(input), [157]);
+Deno.test('getDuplicateCharOutOf3', () => {
+  assertEquals(day03.getDuplicateCharOutOf3(["abcdefg", "defghij", "tzitztzutzue"]), "e");
+});
+
+Deno.test('day 03 - part1', () => {
+  assertEquals(day03.run(input)?.[0], 157);
+});
+
+Deno.test('day 03 - part2', () => {
+  assertEquals(day03.run(input)?.[1], 70);
 });
