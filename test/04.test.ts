@@ -7,7 +7,8 @@ const input = `2-4,6-8
 5-7,7-9
 2-8,3-7
 6-6,4-6
-2-6,4-8`;
+2-6,4-8
+`;
 
 Deno.test("getCharScore", () => {
   assertEquals(day04.getRange("2-7"), [2, 3, 4, 5, 6, 7]);
