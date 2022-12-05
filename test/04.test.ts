@@ -27,10 +27,20 @@ Deno.test("isOneContainingTheOther", () => {
   assertEquals(day04.isOneContainingTheOther([[1], []]), true);
 });
 
+Deno.test("isOverlapping", () => {
+  assertEquals(day04.isOverlapping([[1, 2], [2, 3]]), true);
+  assertEquals(day04.isOverlapping([[1, 2, 3], [5, 6]]), false);
+  assertEquals(day04.isOverlapping([[1, 2, 3, 4], [2, 3]]), true);
+  assertEquals(day04.isOverlapping([[2, 3], [1, 2, 3, 4]]), true);
+  assertEquals(day04.isOverlapping([[1, 2], [1, 2, 3, 4]]), true);
+  assertEquals(day04.isOverlapping([[1, 2, 3, 4], [1, 2, 3, 4]]), true);
+  assertEquals(day04.isOverlapping([[1], []]), false);
+});
+
 Deno.test("day 04 - part1", () => {
   assertEquals(day04.run(input)?.[0], 2);
 });
 
-// Deno.test("day 04 - part2", () => {
-//   assertEquals(day04.run(input)?.[1], 70);
-// });
+Deno.test("day 04 - part2", () => {
+  assertEquals(day04.run(input)?.[1], 4);
+});
