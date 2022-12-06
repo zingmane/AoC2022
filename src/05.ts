@@ -1,8 +1,8 @@
 // @deno-types="@types/lodash/fp"
 import fp from "lodash/fp";
-import { splitByNewline } from "./helper.ts";
+import { splitByEmptyRows, splitByNewline } from "./helper.ts";
 
-type Instruction = {
+export type Instruction = {
   move: number;
   from: number;
   to: number;
@@ -26,12 +26,16 @@ export const toStackLine = (start: number) => (str: string) => {
   const res = [];
   for (let i = start; i < str.length; i += 4) {
     const value = fp.trim(str[i]);
-    !fp.isEmpty(value) && res.push(str[i]);
+    if (fp.isEmpty(value)) {
+      res.push(null);
+    } else {
+      res.push(str[i]);
+    }
   }
   return res;
 };
 
-type Stack = {
+export type Stack = {
   [key: number]: string[];
 };
 
@@ -61,17 +65,41 @@ export const initializeInstructions = fp.compose(
   splitByNewline,
 );
 
-// const [rawStack, rawInstructions] = splitByEmptyRows(input);
+export const executeInstruction = (ins: Instruction) => (stack: Stack) => {
+  const oldFromStack = fp.get(ins.from, stack);
+  const oldToStack = fp.get(ins.to, stack);
 
-// const getPart1 = fp.compose(
-//   fp.size,
-//   fp.filter(fp.identity),
-//   fp.map(isOneContainingTheOther),
-//   fp.map(fp.map(getRange)),
-//   fp.map(splitByComma),
-//   fp.compact,
-//   splitByNewline,
-// );
+  const cutEndBy = (ff: number) => (arr: string[]) => fp.slice(arr.length - ff, arr.length, arr);
+
+  const trans = fp.compose(
+    fp.reverse,
+    cutEndBy(ins.move),
+  )(oldFromStack);
+
+  const newFromStack = fp.take(oldFromStack.length - ins.move, oldFromStack);
+  const newToStack = fp.concat(oldToStack, trans);
+
+  return { ...stack, [ins.from]: newFromStack, [ins.to]: newToStack };
+};
+
+const applyInstructions = (stack: Stack) =>
+  fp.reduce((acc: Stack, curr: Instruction) => {
+    return executeInstruction(curr)(acc);
+  }, stack);
+
+const getPart1 = (raw: string) => {
+  const [rawStack, rawInstructions] = splitByEmptyRows(raw);
+
+  const stack: Stack = initializeStack(rawStack);
+  const instructions: Instruction[] = initializeInstructions(rawInstructions);
+
+  return fp.compose(
+    fp.join(""),
+    fp.values,
+    fp.mapValues(fp.last),
+    applyInstructions(stack),
+  )(instructions);
+};
 
 // const getPart2 = fp.compose(
 //   fp.size,
@@ -84,9 +112,8 @@ export const initializeInstructions = fp.compose(
 // );
 
 export const run = (raw: string) => {
-  // const part1 = getPart1(raw);
+  const part1 = getPart1(raw);
   // const part2 = getPart2(raw);
-  const part1 = "";
   const part2 = "";
 
   return [part1, part2];
