@@ -2,7 +2,8 @@ import { assertEquals } from "testing/asserts.ts";
 
 import * as day04 from "../src/04.ts";
 
-const input = `2-4,6-8
+const input = `
+2-4,6-8
 2-3,4-5
 5-7,7-9
 2-8,3-7
