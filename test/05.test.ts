@@ -19,6 +19,7 @@ move 1 from 1 to 2
 Deno.test("toInstruction", () => {
   assertEquals(day05.toInstruction("move 1 from 2 to 1"), { move: 1, from: 2, to: 1 });
   assertEquals(day05.toInstruction("move 3 from 1 to 3"), { move: 3, from: 1, to: 3 });
+  assertEquals(day05.toInstruction("move 11 from 12 to 13"), { move: 11, from: 12, to: 13 });
 });
 
 Deno.test("toStackLine", () => {

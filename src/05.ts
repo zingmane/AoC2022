@@ -9,10 +9,10 @@ export type Instruction = {
 };
 
 export const toInstruction = (str: string): Instruction => {
-  const res = str.match(/move (\d) from (\d) to (\d)/);
+  const res = str.match(/move (\d+) from (\d+) to (\d+)/);
 
   if (res?.[1] === undefined || res?.[2] === undefined || res?.[3] === undefined) {
-    throw new Error("error in instruction");
+    throw new Error(`error in instruction: ${str}`);
   }
 
   return {
