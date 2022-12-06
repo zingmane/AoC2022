@@ -65,56 +65,44 @@ export const initializeInstructions = fp.compose(
   splitByNewline,
 );
 
-export const executeInstruction = (ins: Instruction) => (stack: Stack) => {
+export const executeInstruction = (ins: Instruction, canPickMultiCrates: boolean) => (stack: Stack) => {
   const oldFromStack = fp.get(ins.from, stack);
   const oldToStack = fp.get(ins.to, stack);
 
   const cutEndBy = (ff: number) => (arr: string[]) => fp.slice(arr.length - ff, arr.length, arr);
 
   const trans = fp.compose(
-    fp.reverse,
+    canPickMultiCrates ? fp.identity : fp.reverse,
     cutEndBy(ins.move),
   )(oldFromStack);
 
   const newFromStack = fp.take(oldFromStack.length - ins.move, oldFromStack);
   const newToStack = fp.concat(oldToStack, trans);
 
-  return { ...stack, [ins.from]: newFromStack, [ins.to]: newToStack };
+  return { ...stack, [ins.from]: newFromStack, [ins.to]: newToStack } as Stack;
 };
 
-const applyInstructions = (stack: Stack) =>
+const applyInstructions = (stack: Stack, canPickMultiCrates: boolean) =>
   fp.reduce((acc: Stack, curr: Instruction) => {
-    return executeInstruction(curr)(acc);
+    return executeInstruction(curr, canPickMultiCrates)(acc);
   }, stack);
 
-const getPart1 = (raw: string) => {
+const getResult = (stack: Stack, canPickMultiCrates = false) =>
+  fp.compose(
+    fp.join(""),
+    fp.values,
+    fp.mapValues(fp.last),
+    applyInstructions(stack, canPickMultiCrates),
+  );
+
+export const run = (raw: string) => {
   const [rawStack, rawInstructions] = splitByEmptyRows(raw);
 
   const stack: Stack = initializeStack(rawStack);
   const instructions: Instruction[] = initializeInstructions(rawInstructions);
 
-  return fp.compose(
-    fp.join(""),
-    fp.values,
-    fp.mapValues(fp.last),
-    applyInstructions(stack),
-  )(instructions);
-};
-
-// const getPart2 = fp.compose(
-//   fp.size,
-//   fp.filter(fp.identity),
-//   fp.map(isOverlapping),
-//   fp.map(fp.map(getRange)),
-//   fp.map(splitByComma),
-//   fp.compact,
-//   splitByNewline,
-// );
-
-export const run = (raw: string) => {
-  const part1 = getPart1(raw);
-  // const part2 = getPart2(raw);
-  const part2 = "";
+  const part1 = getResult(stack)(instructions);
+  const part2 = getResult(stack, true)(instructions);
 
   return [part1, part2];
 };

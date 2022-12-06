@@ -62,13 +62,13 @@ Deno.test("executeInstruction", () => {
     "2": ["D", "E", "F"],
     "3": ["G", "H", "C", "B"],
   };
-  assertEquals(day05.executeInstruction(instruction)(stack), expected);
+  assertEquals(day05.executeInstruction(instruction, false)(stack), expected);
 });
 
 Deno.test("day 05 - part1", () => {
   assertEquals(day05.run(input)?.[0], "CMZ");
 });
 
-// Deno.test("day 05 - part2", () => {
-//   assertEquals(day05.run(input)?.[1], 4);
-// });
+Deno.test("day 05 - part2", () => {
+  assertEquals(day05.run(input)?.[1], "MCD");
+});
