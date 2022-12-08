@@ -12,9 +12,8 @@ export const getMarkerPosition = (dataStream: string, markerSize = 4): number =>
 };
 
 export const run = (raw: string) => {
-  // const part2 = getPart2(raw);
   const part1 = getMarkerPosition(raw);
-  const part2 = "";
+  const part2 = getMarkerPosition(raw, 14);
 
   return [part1, part2];
 };
