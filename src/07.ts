@@ -132,7 +132,7 @@ const calculateDirSizes = (map: Map<string, DirObj>) => {
   return map;
 };
 
-const filterBySize = (maxSize: number) => (map: Map<string, DirObj>) => {
+const filterByMaxSize = (maxSize: number) => (map: Map<string, DirObj>) => {
   const newMap = new Map<string, DirObj>();
 
   for (const [key, value] of map) {
@@ -140,7 +140,17 @@ const filterBySize = (maxSize: number) => (map: Map<string, DirObj>) => {
       newMap.set(key, value);
     }
   }
+  return newMap;
+};
 
+const filterByMinSize = (minSize: number) => (map: Map<string, DirObj>) => {
+  const newMap = new Map<string, DirObj>();
+
+  for (const [key, value] of map) {
+    if (value.size && value?.size > minSize) {
+      newMap.set(key, value);
+    }
+  }
   return newMap;
 };
 
@@ -153,9 +163,20 @@ const sumSize = (map: Map<string, DirObj>) => {
   return size;
 };
 
-const sizeThreshold = 100000;
+const smallestSize = (map: Map<string, DirObj>) => {
+  let size = Infinity;
+  for (const value of map.values()) {
+    if (value.size && value.size < size) {
+      size = value.size;
+    }
+  }
+  return size;
+};
+
+const sizeThreshold = 100_000;
 
 const buildDirectory = fp.compose(
+  calculateDirSizes,
   toDir,
   fp.compact,
   splitByNewline,
@@ -163,13 +184,34 @@ const buildDirectory = fp.compose(
 
 const getPart1 = fp.compose(
   sumSize,
-  filterBySize(sizeThreshold),
-  calculateDirSizes,
+  filterByMaxSize(sizeThreshold),
   buildDirectory,
 );
 
+const rootSize = (map: Map<string, DirObj>) => map.get("root")?.size;
+
+const getRootSize = fp.compose(
+  rootSize,
+  buildDirectory,
+);
+
+const totalDiskSpace = 70_000_000;
+const neededDiskSpace = 30_000_000;
+
+const getPart2 = (input: string) => {
+  const usedSpace = getRootSize(input);
+  const diskSpaceToFree = neededDiskSpace - (totalDiskSpace - usedSpace);
+
+  return fp.compose(
+    smallestSize,
+    filterByMinSize(diskSpaceToFree),
+    buildDirectory,
+  )(input);
+};
+
 export const run = (raw: string) => {
   const part1 = getPart1(raw);
+  const part2 = getPart2(raw);
 
-  return [part1, "part2"];
+  return [part1, part2];
 };

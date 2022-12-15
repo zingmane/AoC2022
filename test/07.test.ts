@@ -28,14 +28,10 @@ $ ls
 7214296 k
 `;
 
-// Deno.test("getMarkerPosition - marker length 4", () => {
-//   assertEquals(day07.getMarkerPosition(input), 7);
-// });
-
 Deno.test("day 07 - part1", () => {
   assertEquals(day07.run(input)?.[0], 95437);
 });
 
-// Deno.test("day 07 - part2", () => {
-//   assertEquals(day07.run(input5)?.[1], 26);
-// });
+Deno.test("day 07 - part2", () => {
+  assertEquals(day07.run(input)?.[1], 24933642);
+});
