@@ -55,7 +55,6 @@ const doProcess = (initInstructions: Instruction[]) => {
 
   const doCycleProcess = () => {
     while (instructions.length > 0) {
-      cycle;
       if (currentInstruction.command === "addx" && currentInstructionDuration >= 2) {
         execInstruction();
       } else if (currentInstruction.command === "noop" && currentInstructionDuration >= 1) {
@@ -63,7 +62,6 @@ const doProcess = (initInstructions: Instruction[]) => {
       }
 
       if (cycle <= 220 && (cycle === strengthInitCycle || (cycle + strengthInitCycle) % strengthCycleStep === 0)) {
-        cycle;
         signalStrengths = fp.assoc(cycle, cycle * X, signalStrengths);
       }
 
@@ -78,13 +76,74 @@ const doProcess = (initInstructions: Instruction[]) => {
 
 const sumSignalStrengths = (signalStrengths: Record<number, number>) => fp.sum(Object.values(signalStrengths));
 
+const paintCRT = (initInstructions: Instruction[]) => {
+  let cycle = 1;
+  let currentInstructionDuration = 0;
+
+  let currentInstruction = fp.first(initInstructions) as Instruction;
+  let instructions = fp.tail(initInstructions);
+  let X = 1;
+  let currentCrtRow = "";
+  const crtImage: string[] = [];
+  let crtRow = 0;
+  let spritePositions = [0, 1, 2];
+
+  const drawCrt = () => {
+    if (fp.contains((cycle - 1) % strengthCycleStep, spritePositions)) {
+      currentCrtRow = currentCrtRow.concat("#");
+    } else {
+      currentCrtRow = currentCrtRow.concat(".");
+    }
+  };
+
+  const execInstruction = () => {
+    if (currentInstruction?.value) {
+      X += currentInstruction?.value;
+      spritePositions = [X - 1, X, X + 1];
+    }
+    currentInstruction = fp.first(instructions) as Instruction;
+    instructions = fp.tail(instructions);
+    currentInstructionDuration = 0;
+  };
+
+  const doCycleProcess = () => {
+    while (instructions.length > 0) {
+      if (currentInstruction.command === "addx" && currentInstructionDuration >= 2) {
+        execInstruction();
+      } else if (currentInstruction.command === "noop" && currentInstructionDuration >= 1) {
+        execInstruction();
+      }
+
+      drawCrt();
+
+      if (cycle % strengthCycleStep === 0) {
+        crtImage[crtRow] = currentCrtRow;
+        currentCrtRow = "";
+        crtRow++;
+      }
+
+      cycle++;
+      currentInstructionDuration++;
+    }
+  };
+
+  doCycleProcess();
+  return crtImage;
+};
+
 const getPart1 = fp.compose(
   sumSignalStrengths,
   doProcess,
   parseInstructions,
 );
 
-const getPart2 = (_input: any) => "";
+const formatCrt = (consoleArray: string[]) => "\n" + consoleArray.join("\n") + "\n";
+
+const getPart2 = fp.compose(
+  formatCrt,
+  paintCRT,
+  parseInstructions,
+);
 
 export const run = (raw: string) => {
   const part1 = getPart1(raw);

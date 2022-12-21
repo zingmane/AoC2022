@@ -155,7 +155,3 @@ noop
 Deno.test("day 10 - part1", () => {
   assertEquals(day10.run(input1)?.[0], 13140);
 });
-
-// Deno.test("day 10 - part2", () => {
-//   assertEquals(day10.run(input2)?.[1], 36);
-// });
