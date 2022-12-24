@@ -1,7 +1,6 @@
 import { assertEquals } from "testing/asserts.ts";
 
 import * as day10 from "../src/10.ts";
-import { tailMustKeepUpAlongside, tailMustKeepUpDiagonally } from "../src/10.ts";
 
 const input1 = `
 addx 15
