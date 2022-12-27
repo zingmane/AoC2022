@@ -24,6 +24,7 @@ type Monkey = {
   okTargetMonkeyId: string;
   nokTargetMonkeyId: string;
   inspectCount: number;
+  divisibleBy: number;
 };
 
 const getMonkeyById = (id: string) => (monkeys: Monkey[]) =>
@@ -48,6 +49,7 @@ const toMonkeySpecs = (raw: string): Monkey => {
     okTargetMonkeyId,
     nokTargetMonkeyId,
     inspectCount: 0,
+    divisibleBy,
   };
 };
 
@@ -56,20 +58,36 @@ const parseMonkeySpecs = fp.compose(
   splitByEmptyRows,
 );
 
-const playRounds = (rounds: number) => (monkeys: Monkey[]) => {
+const getSuperModulo = (monkeys: Monkey[]) =>
+  Object.keys(monkeys).reduce((acc, cur) => {
+    const divisibleBy = fp.get([cur, "divisibleBy"], monkeys);
+    return divisibleBy * acc;
+  }, 1);
+
+const playRounds = (rounds: number, useSuperModulo = false) => (monkeys: Monkey[]) => {
+  const calcNewWorryItem = (monkey: Monkey, worryItem: number) => {
+    if (useSuperModulo) {
+      const superModulo = getSuperModulo(monkeys);
+      return monkey.calcWorryLevel(worryItem) % superModulo;
+    } else {
+      return Math.floor(monkey.calcWorryLevel(worryItem) / worryIncrease);
+    }
+  };
+
   const doRound = (m: Monkey[]) => {
     return fp.reduce(
       (accMonkeys: Monkey[], monkey: Monkey) => {
         // monkey could have changed over iterations
         const currentMonkey = getMonkeyById(monkey.id)(accMonkeys);
         for (const worryItem of currentMonkey.items) {
-          const newWorryItem = Math.floor(monkey.calcWorryLevel(worryItem) / worryIncrease);
+          const newWorryItem = calcNewWorryItem(monkey, worryItem);
           const isWorryTest = monkey.testWorryLevel(newWorryItem);
 
           const monkeyIdToChange = isWorryTest ? monkey.okTargetMonkeyId : monkey.nokTargetMonkeyId;
           const newItems = getMonkeyById(monkeyIdToChange)(accMonkeys).items;
           accMonkeys = fp.assoc([monkeyIdToChange, "items"], [...newItems, newWorryItem], accMonkeys);
         }
+
         const newInspectCount = currentMonkey.inspectCount + currentMonkey.items.length;
         const currentMonkeyWithEmptyItems = { ...monkey, items: [], inspectCount: newInspectCount };
 
@@ -97,22 +115,18 @@ const getLevelOfMonkeyBusiness = fp.compose(
 const getPart1 = fp.compose(
   getLevelOfMonkeyBusiness,
   playRounds(20),
-  (m) => {
-    console.log(`###LOG###: ${JSON.stringify(m, null, 2)}`);
-    return m;
-  },
   parseMonkeySpecs,
 );
 
-// const getPart2 = fp.compose(
-//   formatCrt,
-//   paintCRT,
-//   parseInstructions,
-// );
+const getPart2 = fp.compose(
+  getLevelOfMonkeyBusiness,
+  playRounds(10_000, true),
+  parseMonkeySpecs,
+);
 
 export const run = (raw: string) => {
   const part1 = getPart1(raw);
-  // const part2 = getPart2(raw);
+  const part2 = getPart2(raw);
 
-  return [part1, "part2"];
+  return [part1, part2];
 };

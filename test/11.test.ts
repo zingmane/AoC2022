@@ -35,3 +35,7 @@ Monkey 3:
 Deno.test("day 11 - part1", () => {
   assertEquals(day11.run(input)?.[0], 10605);
 });
+
+Deno.test("day 11 - part2", () => {
+  assertEquals(day11.run(input)?.[1], 2713310158);
+});
