@@ -1,7 +1,6 @@
 // @deno-types="@types/lodash/fp"
 import fp from "lodash/fp";
-import { match } from "ts-pattern";
-import { splitByBlank, splitByNewline, Values } from "./helper.ts";
+import { splitByNewline, Values } from "./helper.ts";
 
 const Command = {
   ADDX: "addx",
