@@ -73,6 +73,6 @@ Deno.test("day 13 - part1", () => {
   assertEquals(day13.run(input)?.[0], 13);
 });
 
-// Deno.test("day 13 - part2", () => {
-//   assertEquals(day13.run(input)?.[1], "");
-// });
+Deno.test("day 13 - part2", () => {
+  assertEquals(day13.run(input)?.[1], 140);
+});

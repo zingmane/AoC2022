@@ -73,8 +73,42 @@ const getPart1 = fp.compose(
   splitByEmptyRows,
 );
 
+const divider1 = [[2]];
+const divider2 = [[6]];
+
+const multiplyDividersIndices = (arr: NumberOrArray[]) => {
+  let i = 1;
+  let dividerIndex1 = 0;
+  let dividerIndex2 = 0;
+
+  for (const packet of arr) {
+    if (fp.isEqual(packet, divider1)) {
+      dividerIndex1 = i;
+    }
+    if (fp.isEqual(packet, divider2)) {
+      dividerIndex2 = i;
+    }
+
+    i++;
+  }
+
+  return dividerIndex1 * dividerIndex2;
+};
+
+const addDividers = (arr: NumberOrArray[]) => [...arr, divider1, divider2];
+const orderPackets = (arr: NumberOrArray[]) =>
+  arr.sort((a, b) => {
+    const res = compareArrays([a, b]);
+    return res ? -1 : 1;
+  });
+
 const getPart2 = fp.compose(
-  () => "",
+  multiplyDividersIndices,
+  orderPackets,
+  addDividers,
+  fp.map(JSON.parse),
+  fp.compact,
+  splitByNewline,
 );
 
 export const run = (raw: string) => {
