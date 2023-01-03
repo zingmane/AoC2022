@@ -12,5 +12,5 @@ Deno.test("day 14 - part1", () => {
 });
 
 Deno.test("day 14 - part2", () => {
-  assertEquals(day14.run(input)?.[1], 140);
+  assertEquals(day14.run(input)?.[1], 93);
 });

@@ -36,7 +36,7 @@ const getExtent = (coords: Coord[][]) => {
     })
   );
 
-  return { xMax, yMax };
+  return { x: xMax, y: yMax };
 };
 
 const Element = {
@@ -49,9 +49,9 @@ type Element = Values<typeof Element>;
 
 const SandSource = { x: 500, y: 0 };
 
-const createCaveMap = (x: number, y: number) => {
-  const row = fp.times(() => Element.AIR, x + 2);
-  return fp.times(() => [...row], y + 2) as CaveMap;
+const createCaveMap = (extent: Coord) => {
+  const row = fp.times(() => Element.AIR, extent.x + extent.y + 2);
+  return fp.times(() => [...row], extent.y + 3) as CaveMap;
 };
 
 type CaveMap = Element[][];
@@ -59,10 +59,9 @@ type CaveMap = Element[][];
 const isHorizontalRock = (head: Coord, tail: Coord) => tail.y === head.y;
 const isVerticalRock = (head: Coord, tail: Coord) => tail.x === head.x;
 
-const fillWithRocks = (map: CaveMap, coordsList: Coord[][]) => {
+const fillWithRocks = (map: CaveMap, coordsList: Coord[][], withBottom = false) => {
   for (const coords of coordsList) {
     for (let i = 0; i < coords.length - 1; i++) {
-      i;
       const tail = coords[i];
       const head = coords[i + 1];
 
@@ -101,6 +100,13 @@ const fillWithRocks = (map: CaveMap, coordsList: Coord[][]) => {
     }
   }
 
+  if (withBottom) {
+    const yBottom = map.length - 1;
+    for (let cols = 0; cols < map[0].length; cols++) {
+      map[yBottom][cols] = Element.ROCK;
+    }
+  }
+
   map[SandSource.y][SandSource.x] = Element.SANDSOURCE;
 
   return map;
@@ -114,40 +120,43 @@ const printCaveMap = (caveMap: CaveMap) => {
   console.log(output);
 };
 
-const fillWithSand = (map: CaveMap) => {
+const getElement = (x: number, y: number, map: CaveMap) => {
+  try {
+    return map[y][x];
+  } catch (_error) {
+    // fall into void
+    return Element.AIR;
+  }
+};
+
+const canFallToBottom = (coord: Coord, map: CaveMap) => {
+  const elem = getElement(coord.x, coord.y + 1, map);
+  return elem === Element.AIR;
+};
+const canFallToLeft = (coord: Coord, map: CaveMap) => {
+  const elem = getElement(coord.x - 1, coord.y + 1, map);
+  return elem === Element.AIR;
+};
+const canFallToRight = (coord: Coord, map: CaveMap) => {
+  const elem = getElement(coord.x + 1, coord.y + 1, map);
+  return elem === Element.AIR;
+};
+const canFall = (coord: Coord, map: CaveMap) => {
+  return canFallToBottom(coord, map) || canFallToLeft(coord, map) || canFallToRight(coord, map);
+};
+
+const fillWithSand = (map: CaveMap, exitCondition: (coord: Coord) => boolean) => {
   let grainOfSandCount = 0;
-  let isFallingIntoVoid = false;
+  let canDropNextGrainOfSand = true;
 
-  const getElement = (x: number, y: number, map: CaveMap) => {
-    try {
-      return map[y][x];
-    } catch (_error) {
-      // fall into void
-      return Element.AIR;
-    }
-  };
-
-  const canFallToBottom = (coord: Coord, map: CaveMap) => {
-    const elem = getElement(coord.x, coord.y + 1, map);
-    return elem === Element.AIR;
-  };
-  const canFallToLeft = (coord: Coord, map: CaveMap) => {
-    const elem = getElement(coord.x - 1, coord.y + 1, map);
-    return elem === Element.AIR;
-  };
-  const canFallToRight = (coord: Coord, map: CaveMap) => {
-    const elem = getElement(coord.x + 1, coord.y + 1, map);
-    return elem === Element.AIR;
-  };
-
-  const dropGrainOfSand = (map: CaveMap) => {
-    let currentCoord = { x: SandSource.x, y: SandSource.y + 1 };
+  const dropGrainOfSand = (map: CaveMap, exitCondition: (coord: Coord) => boolean) => {
+    let currentCoord = { x: SandSource.x, y: SandSource.y };
     let canFallFurther = true;
 
     do {
-      if (currentCoord.y >= map.length) {
+      if (exitCondition(currentCoord)) {
         canFallFurther = false;
-        isFallingIntoVoid = true;
+        canDropNextGrainOfSand = false;
         break;
       }
 
@@ -169,17 +178,17 @@ const fillWithSand = (map: CaveMap) => {
       canFallFurther = false;
     } while (canFallFurther);
 
-    if (!isFallingIntoVoid) {
+    if (canDropNextGrainOfSand) {
       map[currentCoord.y][currentCoord.x] = Element.SAND;
       grainOfSandCount++;
     }
   };
 
   do {
-    dropGrainOfSand(map);
-  } while (!isFallingIntoVoid);
+    dropGrainOfSand(map, exitCondition);
+  } while (canDropNextGrainOfSand);
 
-  // printCaveMap(map);
+  printCaveMap(map);
 
   return grainOfSandCount;
 };
@@ -188,26 +197,29 @@ const getPart1 = (raw: string) => {
   const coordsList = getCoords(raw);
 
   const extent = getExtent(coordsList);
-  const emptyCaveMap = createCaveMap(extent.xMax, extent.yMax);
+  const emptyCaveMap = createCaveMap(extent);
   const caveMap = fillWithRocks(emptyCaveMap, coordsList);
 
-  const grainOfSandCount = fillWithSand(caveMap);
+  const grainOfSandCount = fillWithSand(caveMap, (currentCoord: Coord) => currentCoord.y >= caveMap.length);
   return grainOfSandCount;
 };
 
-// const getPart2 = fp.compose(
-//   multiplyDividersIndices,
-//   orderPackets,
-//   addDividers,
-//   fp.map(JSON.parse),
-//   fp.compact,
-//   splitByNewline,
-// );
+const getPart2 = (raw: string) => {
+  const coordsList = getCoords(raw);
+
+  const extent = getExtent(coordsList);
+  const emptyCaveMap = createCaveMap(extent);
+  const caveMap = fillWithRocks(emptyCaveMap, coordsList, true);
+
+  const grainOfSandCount = fillWithSand(caveMap, (currentCoord: Coord) => {
+    return !canFall(currentCoord, caveMap) && currentCoord.y < 1;
+  });
+  return grainOfSandCount + 1; // add one, the source ot the sand
+};
 
 export const run = (raw: string) => {
   const part1 = getPart1(raw);
-  // const part2 = getPart2(raw);
-  const part2 = "";
+  const part2 = getPart2(raw);
 
   return [part1, part2];
 };
